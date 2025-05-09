@@ -49,6 +49,12 @@ const embeddingContext = inject<Ref<EmbeddingContext>>(EmbeddingContextInjection
 
 const visualFrame = ref<VisualExperience>()
 
+defineExpose({
+  getFilterGroups: ()=> getFilterGroups(visualFrame.value),
+  updateFilterGroups: (filterGroups: any[])=> updateFilterGroups(visualFrame.value, filterGroups),
+  setParameters: (parameters: Parameter[]) => setParameters(visualFrame.value, parameters)
+})
+
 const containerId = computed(() => props.id || `v-quicksight-visual-${nanoid(6)}`)
 const frameOptions = computed<FrameOptions>(() => {
   return {
@@ -82,8 +88,25 @@ async function embedVisual(ctx: EmbeddingContext) {
   }
 }
 
-async function setParameters(frame: VisualExperience, parameters: Parameter[]) {
-  return await frame.setParameters(parameters)
+async function setParameters(frame: VisualExperience | undefined, parameters: Parameter[]) {
+  if(frame)
+    return await frame.setParameters(parameters)
+  else
+    return null
+}
+
+async function getFilterGroups(frame: VisualExperience | undefined) {
+  if(frame)
+    return await frame.getFilterGroups()
+  else
+    return null
+}
+
+async function updateFilterGroups(frame: VisualExperience | undefined, filterGroups: any[]) {
+  if(frame)
+    return await frame.updateFilterGroups(filterGroups)
+  else
+    return null
 }
 
 async function setTheme(frame: VisualExperience, theme: string | ThemeConfiguration) {

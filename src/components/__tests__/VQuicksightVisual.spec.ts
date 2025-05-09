@@ -4,6 +4,9 @@ import type { ThemeConfiguration } from '../../types'
 import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { nextTick, ref } from 'vue'
+import type {
+  Parameter
+} from 'amazon-quicksight-embedding-sdk'
 
 const frameOptions = {
   container: '#custom-el',
@@ -28,6 +31,8 @@ describe('VQuicksightVisual', () => {
   function setupComponent(props: Record<string, any> = {}) {
     const visualFrame = {
       setParameters: vi.fn().mockResolvedValue({ success: true }),
+      getFilterGroups: vi.fn().mockResolvedValue({ filters: [] }),
+      updateFilterGroups: vi.fn().mockResolvedValue({ success: true }),
       setTheme: vi.fn().mockResolvedValue({ success: true }),
       setThemeOverride: vi.fn().mockResolvedValue({ success: true })
     }
@@ -160,4 +165,30 @@ describe('VQuicksightVisual', () => {
       expect(visualFrame.setThemeOverride).toHaveBeenCalledWith(theme)
     })
   })
+
+  it('getFilterGroups returns null when no frame exists', async () => {
+    const { component } = setupComponent()
+    await flushPromises()
+    const result = await component.vm.getFilterGroups()
+    expect(result).toHaveProperty('filters', [])
+  })
+
+  it('updateFilterGroups calls frame method with provided groups', async () => {
+    const { component, visualFrame } = setupComponent()
+    await flushPromises()
+    const filterGroups = [{ id: 1, filters: [] }]
+    await component.vm.updateFilterGroups(filterGroups)
+
+    expect(visualFrame.updateFilterGroups).toHaveBeenCalledWith(filterGroups)
+  })
+
+  it('setParameters calls frame method with provided parameters', async () => {
+    const { component, visualFrame } = setupComponent()
+    await flushPromises()
+    const parameters: Parameter[] = [{ Name: 'test', Values: ['value'] }]
+    await component.vm.setParameters(parameters)
+
+    expect(visualFrame.setParameters).toHaveBeenCalledWith(parameters)
+  })
+
 })

@@ -31,9 +31,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/v-quicksight.es.js",
-      "require": "./dist/v-quicksight.umd.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/v-quicksight.umd.js"
     }
   },
   "files": [
